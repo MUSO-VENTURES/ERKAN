@@ -297,8 +297,25 @@
     color: rgba(255,255,255,0.6);
   }
 
+  #review {
+    flex-direction: column;
+  }
+
+  .review-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 55vh;
+  }
+
   .review-body {
     padding: 28px 36px 32px;
+  }
+
+  .review-buttons-footer {
+    flex: 0 0 auto;
+    padding: 18px 36px 28px;
+    border-top: 1px solid #E4EAEE;
+    background: #ffffff;
   }
 
   .review-title {
@@ -617,39 +634,42 @@
     <h2>Review &amp; Confirm</h2>
     <p>Please review your details before signing</p>
   </div>
-  <div class="review-body">
-    <div class="review-title">Your Information</div>
+  <div class="review-scroll">
+    <div class="review-body">
+      <div class="review-title">Your Information</div>
 
-    <div class="review-fields">
-      <div class="review-row">
-        <span class="review-label">Full Name</span>
-        <span class="review-value" id="rv-name"></span>
+      <div class="review-fields">
+        <div class="review-row">
+          <span class="review-label">Full Name</span>
+          <span class="review-value" id="rv-name"></span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Email</span>
+          <span class="review-value" id="rv-email"></span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Phone</span>
+          <span class="review-value" id="rv-phone"></span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Date</span>
+          <span class="review-value" id="rv-date"></span>
+        </div>
       </div>
-      <div class="review-row">
-        <span class="review-label">Email</span>
-        <span class="review-value" id="rv-email"></span>
+
+      <div class="review-title">Your Signature</div>
+      <div class="review-sig-box">
+        <div class="review-sig-label">Electronic Signature</div>
+        <canvas id="review-sig-preview" width="900" height="140"></canvas>
       </div>
-      <div class="review-row">
-        <span class="review-label">Phone</span>
-        <span class="review-value" id="rv-phone"></span>
-      </div>
-      <div class="review-row">
-        <span class="review-label">Date</span>
-        <span class="review-value" id="rv-date"></span>
+
+      <div class="review-agree">
+        <div class="review-agree-check">&#10003;</div>
+        <span>I agree to the Non-Disclosure Agreement. I understand this proposal is confidential intellectual property of MUSO VENTURES LLC and governed by California law.</span>
       </div>
     </div>
-
-    <div class="review-title">Your Signature</div>
-    <div class="review-sig-box">
-      <div class="review-sig-label">Electronic Signature</div>
-      <canvas id="review-sig-preview" width="900" height="140"></canvas>
-    </div>
-
-    <div class="review-agree">
-      <div class="review-agree-check">&#10003;</div>
-      <span>I agree to the Non-Disclosure Agreement. I understand this proposal is confidential intellectual property of MUSO VENTURES LLC and governed by California law.</span>
-    </div>
-
+  </div>
+  <div class="review-buttons-footer">
     <div class="review-buttons">
       <button class="back-btn" onclick="goBack()">&#8592; Edit</button>
       <button class="confirm-btn" id="confirm-btn" onclick="openProposal()">Sign &amp; Open Proposal &rarr;</button>
@@ -1041,7 +1061,7 @@ async function unlock() {
   rctx.drawImage(canvas, 0, 0, reviewCanvas.width, reviewCanvas.height);
 
   document.getElementById('gate').style.display   = 'none';
-  document.getElementById('review').style.display = 'block';
+  document.getElementById('review').style.display = 'flex';
   window.scrollTo(0, 0);
 }
 
