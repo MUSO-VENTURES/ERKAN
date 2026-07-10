@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1063,25 +1064,7 @@ async function unlock() {
   document.getElementById('gate').style.display   = 'none';
   document.getElementById('review').style.display = 'flex';
   window.scrollTo(0, 0);
-  sizeReviewScroll();
 }
-
-// CSS vh is unreliable on iOS Safari (it's calculated against the viewport
-// with browser chrome hidden, not the actual visible area), so compute the
-// scrollable region's max-height from window.innerHeight in JS instead —
-// this guarantees the Sign & Open button in the footer is always on-screen.
-function sizeReviewScroll() {
-  const review = document.getElementById('review');
-  if (review.style.display === 'none' || !review.style.display) return;
-  const scrollEl = review.querySelector('.review-scroll');
-  const header   = review.querySelector('.review-header');
-  const footer   = review.querySelector('.review-buttons-footer');
-  const outerMargin = 48; // body padding top+bottom breathing room
-  const available = window.innerHeight - header.offsetHeight - footer.offsetHeight - outerMargin;
-  scrollEl.style.maxHeight = Math.max(120, available) + 'px';
-}
-window.addEventListener('resize', sizeReviewScroll);
-window.addEventListener('orientationchange', () => setTimeout(sizeReviewScroll, 100));
 
 function goBack() {
   document.getElementById('review').style.display = 'none';
