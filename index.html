@@ -1088,12 +1088,15 @@ async function openProposal() {
   pdfBlobUrl = URL.createObjectURL(blob);
   pdfBlobObj = blob;
 
-  // iOS/iPadOS: Safari renders blob PDFs in iframes as blank pages,
-  // so show a fallback screen with Open / Download buttons instead.
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  // Touch devices (iPad/iPhone/Android tablets) render blob PDFs in iframes
+  // as blank pages, so show a fallback screen with Open / Download buttons
+  // instead. Detect by touch capability alone — navigator.platform and
+  // userAgent substrings are unreliable across iPadOS versions (iPadOS
+  // reports as "Macintosh" by default). Real trackpads report 0 touch
+  // points, so this reliably separates touch tablets/phones from desktops.
+  const isTouchDevice = navigator.maxTouchPoints > 1;
 
-  if (isIOS) {
+  if (isTouchDevice) {
     frame.style.display = 'none';
     document.getElementById('ios-fallback').style.display = 'flex';
   } else {
