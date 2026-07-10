@@ -718,13 +718,17 @@
     <button onclick="downloadProposalPDF()" style="
       background:transparent; color:#3D9DB3; border:2px solid #3D9DB3; border-radius:10px;
       padding:15px 32px; font-size:15px; font-weight:700; letter-spacing:0.5px;
-      cursor:pointer; width:100%; max-width:340px;">Download PDF</button>
+      cursor:pointer; width:100%; max-width:340px; margin-bottom:14px;">Download PDF</button>
+    <a href="javascript:void(0)" onclick="downloadReceiptPDF()" style="color:rgba(255,255,255,0.55); font-size:12px; text-decoration:underline; cursor:pointer;">Download Signed NDA Receipt</a>
   </div>
 
   <div class="viewer-footer">
    <div class="viewer-footer-inner">
     <span>MUSO VENTURES LLC &middot; CONFIDENTIAL &middot; NDA PROTECTED</span>
-    <span id="viewer-signer"></span>
+    <span style="display:flex; align-items:center; gap:14px;">
+      <span id="viewer-signer"></span>
+      <a href="javascript:void(0)" onclick="downloadReceiptPDF()" style="color:#3D9DB3; text-decoration:underline; cursor:pointer;">Download Signed Receipt</a>
+    </span>
    </div>
   </div>
   <div class="watermark-overlay"></div>
@@ -1020,9 +1024,16 @@ async function unlock() {
     doc.setTextColor(180, 200, 210);
     doc.text('This document serves as a binding electronic record of NDA acceptance.', pw - margin, ph - 7, { align: 'right' });
 
-    // Auto-download
+    // Store the receipt blob for a manual download button — do NOT call
+    // doc.save() here. On iOS Safari, jsPDF's save() falls back to
+    // navigating the current tab to the PDF blob (no `download` attribute
+    // support), which replaces this entire page and kills the rest of the
+    // signing flow (Formspree submit, review screen, proposal viewer never
+    // run). Offering an explicit button instead avoids that hijack on any
+    // browser and is more predictable UX than a silent auto-download too.
     const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
-    doc.save('MUSO_VENTURES_NDA_' + safeName + '_' + new Date().toISOString().slice(0,10) + '.pdf');
+    receiptPdfBlobObj = doc.output('blob');
+    receiptPdfFilename = 'MUSO_VENTURES_NDA_' + safeName + '_' + new Date().toISOString().slice(0,10) + '.pdf';
 
   } catch(pdfErr) {
     console.warn('Receipt PDF generation failed:', pdfErr);
@@ -1091,6 +1102,20 @@ function goBack() {
 
 let pdfBlobUrl = null;
 let pdfBlobObj = null;
+let receiptPdfBlobObj = null;
+let receiptPdfFilename = null;
+
+function downloadReceiptPDF() {
+  if (!receiptPdfBlobObj) return;
+  const a = document.createElement('a');
+  const url = URL.createObjectURL(receiptPdfBlobObj);
+  a.href = url;
+  a.download = receiptPdfFilename || 'MUSO_VENTURES_NDA_Receipt.pdf';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
 
 function openInNewTab() {
   if (pdfBlobUrl) {
